@@ -148,7 +148,11 @@ public class App {
                             System.out.println("Vale, perfe, dime como llamarla: ");
                             String carpetNew= sc.nextLine();
                             Path carpet= Paths.get(carpetNew);
-                            
+                            if(Files.exists(carpet)){
+                                System.out.println("Esa carpeta ya existe");
+                            }else{
+                                
+                            }
                             break;
                         case "F":
                             
