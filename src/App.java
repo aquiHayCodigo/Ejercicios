@@ -120,15 +120,25 @@ public class App {
         rutaRaiz.resolve(rutaReadme);
 
         try (
-                Stream<Path> rutas = Files.walk(rutaRaiz);) {
-            rutas.forEach(ruta -> System.out.println(ruta));
+            Stream<Path> rutas = Files.walk(rutaRaiz);) {
+            // rutas.forEach(ruta -> System.out.println(ruta));
+            rutas.forEach(
+                (ruta) -> {
+                    if(Files.isDirectory(ruta)){
+                        System.out.println("Directorio: " + ruta);
+                    }else{
+                     System.out.println("Subcarpeta " + ruta);   
+                    }
+            });
 
         } catch (Exception e) {
-            // TODO: handle exception
+            System.err.println(e);
         }
+
+        Menu(rutaRaiz);
     }
 
-    public static void Menu() {
+    public static void Menu(Path rutaRaiz) {
         boolean salir = false;
         do {
             System.out.println("===============");
@@ -137,33 +147,64 @@ public class App {
             System.out.println("3. MOVER");
             System.out.println("===============");
 
-            int opcion = sc.nextInt();
+            int opcion = Integer.parseInt(sc.nextLine());
 
             switch (opcion) {
                 case 1:
-                    System.out.println("Dime si quieres crearrr un fichero (F) o una carpetaaaaa (C), ya ya yayayaya perro: ");
+                    System.out.println("Dime si quieres crearrr un fichero (F) o una carpeta (C): ");
                     String dime= sc.nextLine();
                     switch (dime) {
                         case "C":
-                            System.out.println("Vale, perfe, dime como llamarla: ");
+                            System.out.println("Vale, dime como llamarla: ");
                             String carpetNew= sc.nextLine();
-                            Path carpet= Paths.get(carpetNew);
-                            if(Files.exists(carpet)){
+                            Path carpeta= Paths.get(carpetNew);
+                            if(Files.exists(carpeta)){
                                 System.out.println("Esa carpeta ya existe");
                             }else{
-                                
+                                try {
+                                    Files.createDirectory(carpeta);
+                                    System.out.println("Se ha creado el fichero");
+                                } catch (IOException e) {
+                                    System.err.println("Ha habido un error al crear la carpeta");
+                                }
                             }
-                            break;
+                        break;
+
                         case "F":
-                            
-                            break;
+                            System.out.println("Vale, dime como llamarlo: ");
+                            String fileNew= sc.nextLine();
+                            Path ruta = rutaRaiz.resolve(fileNew);
+                            // Files.createFile(fileNew);
+                            System.out.println("El archivo " + ruta + "ha sido creado");
+                        break;
+                
                         default:
                             throw new AssertionError();
                     }
-                    break;
-            
+
+                break;
+
+                case 2:
+                    System.out.println("Dime el nombre de la carpeta que quieres borrar: ");
+                    String borrar= sc.nextLine();
+                    Path carpetaBorrar= Paths.get(borrar);
+                    if(Files.exists(carpetaBorrar)){
+                        try {
+                            Files.delete(carpetaBorrar);
+                        } catch (IOException e) {
+                            System.err.println("Ha habido un error al borrar la carpeta");
+                        }
+                    }else{
+                        System.out.println("Esa carpeta no existe");
+                    }
+
+                case 3:
+                    System.out.println("Dime el nombre de la carpeta que quieres mover: ");
+                    String mover= sc.nextLine();
+
+
                 default:
-                    break;
+                break;
             }
 
         } while (!salir);
